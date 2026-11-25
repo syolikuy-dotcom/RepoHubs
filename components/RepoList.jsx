@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GitFork, Scale, Star } from "lucide-react";
+import { BookMarked, GitFork, Lock, Scale, Star } from "lucide-react";
 import { fmtNum, langColor, timeAgo } from "@/lib/utils";
 import { VisBadge } from "./ui/common";
 
@@ -7,7 +7,8 @@ export function RepoItem({ repo, showOwner = true }) {
   return (
     <div className="box-row" style={{ flexDirection: "column", gap: 6 }}>
       <div className="flex items-center gap-2 wrap">
-        <Link href={`/${repo.full_name}`} className="bold wrap-any" style={{ fontSize: 18 }}>{showOwner ? repo.full_name : repo.name}</Link>
+        {repo.private ? <Lock size={15} className="icon muted" aria-hidden="true" /> : <BookMarked size={15} className="icon muted" aria-hidden="true" />}
+        <Link href={`/${repo.full_name}`} className="bold wrap-any" style={{ fontSize: 17 }}>{showOwner ? repo.full_name : repo.name}</Link>
         <VisBadge isPrivate={repo.private} />
         {repo.fork && <span className="pill">Fork</span>}
         {repo.archived && <span className="pill warn">Archived</span>}
@@ -16,7 +17,7 @@ export function RepoItem({ repo, showOwner = true }) {
       {repo.topics?.length > 0 && (
         <div className="flex wrap gap-1">{repo.topics.slice(0, 6).map((t) => <Link key={t} className="topic" href={`/search?type=repositories&q=topic:${encodeURIComponent(t)}`}>{t}</Link>)}</div>
       )}
-      <div className="flex wrap gap-3 muted text-sm items-center">
+      <div className="flex wrap gap-3 muted text-sm items-center tabular">
         {repo.language && <span><span className="lang-dot" style={{ background: langColor(repo.language) }} />{repo.language}</span>}
         {repo.stargazers_count > 0 && <span className="flex items-center gap-1"><Star size={14} className="icon" />{fmtNum(repo.stargazers_count)}</span>}
         {repo.forks_count > 0 && <span className="flex items-center gap-1"><GitFork size={14} className="icon" />{fmtNum(repo.forks_count)}</span>}

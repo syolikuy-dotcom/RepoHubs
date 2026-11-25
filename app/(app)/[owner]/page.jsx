@@ -117,9 +117,9 @@ export default async function Profile({ params, searchParams }) {
               {pinned.length > 0 && <SectionTitle icon={BookMarked}>Repository</SectionTitle>}
               <div className="pinned mb-3">{pinned.map((p) => (
                 <div className="box" key={p.nameWithOwner}><div className="box-body">
-                  <div className="flex items-center gap-2"><Link href={`/${p.nameWithOwner}`} className="bold wrap-any">{p.nameWithOwner.split("/")[1]}</Link><span className="pill">{p.isPrivate ? <Lock size={12} aria-hidden="true" /> : <Globe size={12} aria-hidden="true" />}{p.isPrivate ? "Private" : "Public"}</span></div>
-                  <p className="muted wrap-any" style={{ margin: 0, flex: 1 }}>{p.description}</p>
-                  <div className="flex gap-3 muted text-sm">{p.primaryLanguage && <span><span className="lang-dot" style={{ background: langColor(p.primaryLanguage.name) }} />{p.primaryLanguage.name}</span>}<span className="meta"><Star size={14} aria-hidden="true" />{p.stargazerCount}</span><span className="meta"><GitFork size={14} aria-hidden="true" />{p.forkCount}</span></div>
+                  <div className="flex items-center gap-2"><BookMarked size={15} className="icon muted" aria-hidden="true" /><Link href={`/${p.nameWithOwner}`} className="bold wrap-any">{p.nameWithOwner.split("/")[1]}</Link><span className="pill">{p.isPrivate ? <Lock size={12} aria-hidden="true" /> : <Globe size={12} aria-hidden="true" />}{p.isPrivate ? "Private" : "Public"}</span></div>
+                  <p className="muted wrap-any text-sm" style={{ margin: 0, flex: 1 }}>{p.description || "Tidak ada deskripsi."}</p>
+                  <div className="flex gap-3 muted text-sm tabular">{p.primaryLanguage && <span><span className="lang-dot" style={{ background: langColor(p.primaryLanguage.name) }} />{p.primaryLanguage.name}</span>}<span className="meta"><Star size={14} aria-hidden="true" />{fmtNum(p.stargazerCount)}</span><span className="meta"><GitFork size={14} aria-hidden="true" />{fmtNum(p.forkCount)}</span></div>
                 </div></div>))}</div>
               {isUser && <Heatmap login={profile.login} year={year} base={`/${owner}`} />}
             </>

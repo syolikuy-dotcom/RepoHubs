@@ -1,17 +1,10 @@
-import Link from "next/link";
-import { Gem, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { getSession } from "@/lib/session";
 import { gh, safe } from "@/lib/github";
-import { HeaderMenus, MainNav } from "./HeaderMenus";
+import { Logo } from "./BrandMark";
+import { CommandPaletteButton, HeaderMenus, MainNav, MobileDrawer } from "./HeaderMenus";
 
-export function Logo() {
-  return (
-    <Link href="/" className="logo" aria-label="RepoHub beranda">
-      <span className="logo-mark"><Gem size={18} aria-hidden="true" /></span>
-      <span>RepoHub</span>
-    </Link>
-  );
-}
+export { Logo };
 
 export default async function Header() {
   const session = await getSession();
@@ -20,13 +13,17 @@ export default async function Header() {
   return (
     <header className="header">
       <div className="container header-inner">
+        <MobileDrawer user={session.user} />
         <Logo />
         <MainNav />
-        <form action="/search" className="header-search" role="search">
-          <Search size={14} aria-hidden="true" />
-          <input name="q" type="search" placeholder="Cari repo, kode, issue, user…" aria-label="Pencarian (tekan /)" autoComplete="off" />
-          <kbd aria-hidden="true">/</kbd>
-        </form>
+        <div className="header-search-wrap">
+          <form action="/search" className="header-search" role="search">
+            <Search size={14} aria-hidden="true" />
+            <input name="q" type="search" placeholder="Ketik / untuk mencari…" aria-label="Pencarian (tekan /)" autoComplete="off" />
+            <kbd aria-hidden="true">/</kbd>
+          </form>
+          <CommandPaletteButton />
+        </div>
         <div className="header-end">
           <HeaderMenus user={session.user} unread={unread.length > 0} />
         </div>

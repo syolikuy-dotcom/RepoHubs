@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
-import { ExternalLink, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { getSession } from "@/lib/session";
-import { Logo } from "@/components/Header";
+import { LogoMark } from "@/components/BrandMark";
+import { ThemeToggleButton } from "@/components/HeaderMenus";
 import LoginForm from "./LoginForm";
 
 export const metadata = { title: "Masuk" };
@@ -13,19 +14,31 @@ export default async function LoginPage({ searchParams }) {
   if (await getSession()) redirect(next);
   return (
     <main className="auth-wrap">
+      <div className="auth-theme-toggle">
+        <ThemeToggleButton />
+      </div>
       <div className="auth-card">
-        <div className="center mb-3" style={{ display: "grid", justifyItems: "center", gap: 12 }}>
-          <Logo />
-          <h1 style={{ fontSize: 24, fontWeight: 600 }}>Masuk ke RepoHub</h1>
-          <p className="page-lead" style={{ margin: 0 }}>Kelola repository, upload folder atau ZIP, dan deploy ke Vercel.</p>
+        <div className="auth-brand">
+          <LogoMark size="lg" />
+          <h1>RepoHub</h1>
+          <p>Masuk dengan GitHub Personal Access Token untuk mengelola repo dan deploy.</p>
         </div>
-        <div className="box"><LoginForm next={next} /></div>
-        <div className="box box-body mt-3" style={{ background: "transparent" }}>
-          <p style={{ margin: "0 0 8px" }}>Belum punya token? <a href={TOKEN_URL} target="_blank" rel="noopener noreferrer" className="meta">Buat di GitHub<ExternalLink size={13} aria-hidden="true" /></a> (scope sudah terisi).</p>
-          <p className="muted text-sm" style={{ margin: 0, display: "flex", gap: 8 }}>
-            <ShieldCheck size={16} className="icon" style={{ color: "var(--brand)" }} aria-hidden="true" />
-            Token dienkripsi (AES-256-GCM) di cookie httpOnly. Browser dan JavaScript halaman tidak pernah bisa membacanya.
+        <div className="auth-box">
+          <LoginForm next={next} tokenUrl={TOKEN_URL} />
+        </div>
+        <div className="auth-callout">
+          <p style={{ margin: "0 0 10px" }}>
+            Belum punya token? <a href={TOKEN_URL} target="_blank" rel="noopener noreferrer" className="bold">Buat token di GitHub</a>
           </p>
+          <p className="muted text-sm" style={{ margin: 0, display: "flex", gap: 8, alignItems: "flex-start" }}>
+            <ShieldCheck size={16} className="icon" style={{ color: "var(--success)", marginTop: 1 }} aria-hidden="true" />
+            <span>Token dienkripsi AES-256-GCM di cookie httpOnly dan tidak pernah terbaca oleh browser.</span>
+          </p>
+        </div>
+        <div className="auth-foot">
+          <span>GitHub Workspace</span>
+          <span>Vercel Deploy</span>
+          <span>AES-256-GCM</span>
         </div>
       </div>
     </main>

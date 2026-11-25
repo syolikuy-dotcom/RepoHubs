@@ -1,7 +1,8 @@
-import { Gem, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import Header from "@/components/Header";
 import HotKeys from "@/components/HotKeys";
 import CommandPalette from "@/components/CommandPalette";
+import { LogoMark } from "@/components/BrandMark";
 
 export default function AppLayout({ children }) {
   return (
@@ -11,8 +12,8 @@ export default function AppLayout({ children }) {
       <CommandPalette />
       <main>{children}</main>
       <footer className="container footer">
-        <span><Gem aria-hidden="true" />RepoHub</span>
-        <span>Next.js + Vercel</span>
+        <span><LogoMark />RepoHub</span>
+        <span>GitHub Workspace &amp; Vercel Deploy</span>
         <span><ShieldCheck aria-hidden="true" />Token dienkripsi di cookie httpOnly</span>
       </footer>
     </>

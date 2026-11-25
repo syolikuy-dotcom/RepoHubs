@@ -109,7 +109,7 @@ export function LangBar({ langs }) {
       <div className="lang-bar" role="img" aria-label="Komposisi bahasa">
         {items.map(([l, b]) => <span key={l} style={{ width: `${(b / total) * 100}%`, background: langColor(l) }} title={l} />)}
       </div>
-      <div className="flex wrap gap-3 mt-2 text-sm">
+      <div className="flex wrap gap-3 mt-2 text-sm tabular">
         {items.slice(0, 6).map(([l, b]) => (
           <span key={l}><span className="lang-dot" style={{ background: langColor(l) }} /><strong>{l}</strong> <span className="muted">{((b / total) * 100).toFixed(1)}%</span></span>
         ))}

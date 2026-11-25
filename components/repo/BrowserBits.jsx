@@ -63,11 +63,13 @@ export function CloneMenu({ fullName, refName }) {
     catch { toast("Gagal menyalin. Salin manual dari kolom.", "error"); }
   };
   return (
-    <Dropdown icon={<Code size={14} className="icon" />} label="Clone" className="btn btn-primary" align="right" width={360}>
-      <div style={{ padding: "0 16px 8px" }}>
-        <div className="flex items-center gap-2 mb-2"><Terminal size={16} className="icon" /><strong>Clone</strong></div>
-        <div className="flex gap-1 mb-2">
-          {[["https", "HTTPS"], ["ssh", "SSH"], ["cli", "GitHub CLI"]].map(([k, l]) => <button key={k} className={`btn btn-sm ${tab === k ? "" : "btn-ghost"}`} onClick={() => setTab(k)}>{l}</button>)}
+    <Dropdown icon={<Code size={14} className="icon" />} label="Kode" className="btn btn-primary" align="right" width={360}>
+      <div style={{ padding: "6px 16px 8px" }}>
+        <div className="flex items-center gap-2 mb-2"><Terminal size={15} className="icon" /><strong>Clone</strong></div>
+        <div className="seg-tabs mb-2" style={{ width: "100%" }}>
+          {[["https", "HTTPS"], ["ssh", "SSH"], ["cli", "GitHub CLI"]].map(([k, l]) => (
+            <button key={k} type="button" className={`seg-tab grow ${tab === k ? "active" : ""}`} onClick={() => setTab(k)}>{l}</button>
+          ))}
         </div>
         <div className="flex gap-1">
           <input className="input mono sm" style={{ fontSize: 12 }} readOnly value={val} onFocus={(e) => e.target.select()} aria-label="URL clone" />

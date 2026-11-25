@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { BookOpen, Code, Eye, File, FileCode, FileText, Folder, FolderUp, GitBranch, GitFork, History, Image as ImageIcon, Info, PackageOpen, Scale, Star, Tag, FilePlus, Users } from "lucide-react";
+import { BookOpen, Code, Eye, File, FileCode, FileText, Folder, FolderUp, GitBranch, GitFork, History, Image as ImageIcon, Info, Link2, PackageOpen, Scale, Star, Tag, FilePlus, Users } from "lucide-react";
 import { gh, ghPage, safe } from "@/lib/github";
 import { encPath, fmtNum, repoUrl, timeAgo, IMAGE_RE } from "@/lib/utils";
 import { Avatar, Empty, LangBar, SearchField, SectionTitle } from "@/components/ui/common";
@@ -80,8 +80,8 @@ export default async function Browser({ r, refName, path }) {
     <div style={{ minWidth: 0 }}>
       <div className="toolbar">
         <BranchSelect owner={owner} repo={repo} current={ref} kind="tree" path={path} isTag={isTag} />
-        <Link href={`/${full}/branches`} className="btn btn-ghost"><GitBranch size={14} className="icon" /><strong>{nBranches}</strong> Branch</Link>
-        <Link href={`/${full}/releases`} className="btn btn-ghost"><Tag size={14} className="icon" /><strong>{nTags}</strong> Tag</Link>
+        <Link href={`/${full}/branches`} className="btn btn-ghost"><GitBranch size={14} className="icon" /><strong className="tabular">{nBranches}</strong> Branch</Link>
+        <Link href={`/${full}/releases`} className="btn btn-ghost"><Tag size={14} className="icon" /><strong className="tabular">{nTags}</strong> Tag</Link>
         <span className="grow" />
         <GoToFileButton />
         {canPush && <AddFileMenu owner={owner} repo={repo} refName={ref} path={path} />}
@@ -96,21 +96,21 @@ export default async function Browser({ r, refName, path }) {
               <Avatar src={lc.author?.avatar_url} size={20} />
               <strong className="truncate shrink0" style={{ maxWidth: 140 }}>{lc.author?.login || lc.commit.author?.name}</strong>
               <Link href={`/${full}/commit/${lc.sha}`} className="truncate grow" style={{ color: "var(--fg-muted)" }}>{lc.commit.message.split("\n")[0]}</Link>
-              <span className="muted shrink0 mono text-sm">{lc.sha.slice(0, 7)}</span>
-              <span className="muted shrink0 text-sm">{timeAgo(lc.commit.author?.date)}</span>
-              <Link href={repoUrl(owner, repo, "commits", ref, path)} className="btn btn-ghost btn-sm shrink0" style={{ color: "var(--fg)" }}><History size={14} className="icon" />{fmtNum(commitCount)}<span className="sr-only"> commit</span></Link>
+              <Link href={`/${full}/commit/${lc.sha}`} className="muted shrink0 mono text-sm">{lc.sha.slice(0, 7)}</Link>
+              <span className="muted shrink0 text-sm tabular">{timeAgo(lc.commit.author?.date)}</span>
+              <Link href={repoUrl(owner, repo, "commits", ref, path)} className="btn btn-ghost btn-sm shrink0 tabular" style={{ color: "var(--fg)" }}><History size={14} className="icon" />{fmtNum(commitCount)}<span className="sr-only"> commit</span></Link>
             </>
           ) : <span className="muted">Belum ada commit.</span>}
         </div>
         {!isRoot && (
-          <div className="ft-row"><Folder size={16} className="icon" style={{ color: "var(--brand)" }} /><div className="name"><Link href={repoUrl(owner, repo, "tree", ref, path.split("/").slice(0, -1).join("/"))}>..</Link></div><span /><span /></div>
+          <div className="ft-row"><Folder size={16} className="icon" style={{ color: "var(--link)" }} /><div className="name"><Link href={repoUrl(owner, repo, "tree", ref, path.split("/").slice(0, -1).join("/"))}>..</Link></div><span /><span /></div>
         )}
         {entries.map((e) => {
           const Icon = e.type === "dir" ? Folder : fileIcon(e.name);
           const href = repoUrl(owner, repo, e.type === "dir" ? "tree" : "blob", ref, e.path);
           return (
             <div className="ft-row" key={e.sha + e.name}>
-              <Icon size={16} className="icon" style={{ color: e.type === "dir" ? "var(--brand)" : "var(--fg-muted)" }} />
+              <Icon size={16} className="icon" style={{ color: e.type === "dir" ? "var(--link)" : "var(--fg-muted)" }} />
               <div className="name truncate"><Link href={href}>{e.name}</Link></div>
               <CommitCell repo={full} refName={ref} path={e.path} />
             </div>
@@ -135,22 +135,27 @@ export default async function Browser({ r, refName, path }) {
       <aside>
         <SectionTitle icon={Info}>Tentang</SectionTitle>
         <p className="wrap-any" style={{ marginTop: 0 }}>{r.description || <span className="muted">Tidak ada deskripsi.</span>}</p>
-        {r.homepage && /^https?:\/\//i.test(r.homepage) && <p className="truncate"><a href={r.homepage} target="_blank" rel="noopener noreferrer nofollow">{r.homepage.replace(/^https?:\/\//, "")}</a></p>}
+        {r.homepage && /^https?:\/\//i.test(r.homepage) && (
+          <p className="truncate meta" style={{ display: "flex" }}>
+            <Link2 size={14} className="icon muted" />
+            <a href={r.homepage} target="_blank" rel="noopener noreferrer nofollow" className="truncate">{r.homepage.replace(/^https?:\/\//, "")}</a>
+          </p>
+        )}
         {r.topics?.length > 0 && <div className="flex wrap gap-1 mb-3">{r.topics.map((t) => <Link key={t} className="topic" href={`/search?type=repositories&q=topic:${encodeURIComponent(t)}`}>{t}</Link>)}</div>}
-        {r.license && <div className="kv"><Scale size={16} className="icon" />{r.license.spdx_id === "NOASSERTION" ? "Lisensi lain" : r.license.spdx_id}</div>}
-        <div className="kv"><Star size={16} className="icon" /><Link href={`/${full}/stargazers`}><strong>{fmtNum(r.stargazers_count)}</strong> bintang</Link></div>
-        <div className="kv"><Eye size={16} className="icon" /><strong>{fmtNum(r.subscribers_count ?? r.watchers_count)}</strong> pengamat</div>
-        <div className="kv"><GitFork size={16} className="icon" /><Link href={`/${full}/forks`}><strong>{fmtNum(r.forks_count)}</strong> fork</Link></div>
+        {r.license && <div className="kv"><Scale size={15} className="icon" />{r.license.spdx_id === "NOASSERTION" ? "Lisensi lain" : r.license.spdx_id}</div>}
+        <div className="kv"><Star size={15} className="icon" /><Link href={`/${full}/stargazers`}><strong>{fmtNum(r.stargazers_count)}</strong> bintang</Link></div>
+        <div className="kv"><Eye size={15} className="icon" /><strong>{fmtNum(r.subscribers_count ?? r.watchers_count)}</strong> pengamat</div>
+        <div className="kv"><GitFork size={15} className="icon" /><Link href={`/${full}/forks`}><strong>{fmtNum(r.forks_count)}</strong> fork</Link></div>
         <form action="/search" className="mt-3"><input type="hidden" name="type" value="code" /><input type="hidden" name="repo" value={full} /><SearchField inputClassName="sm" name="q" placeholder="Cari kode di repo ini…" label="Cari kode di repo ini" /></form>
 
         {release && (
-          <div className="mt-4"><SectionTitle icon={Tag}><Link href={`/${full}/releases`} className="fg-link">Rilis</Link></SectionTitle>
-            <div className="flex items-center gap-2 wrap"><Tag size={16} className="icon" style={{ color: "var(--success)" }} /><strong className="wrap-any">{release.name || release.tag_name}</strong><span className="pill ok">Terbaru</span></div>
-            <div className="muted text-sm">{timeAgo(release.published_at)}</div></div>
+          <div className="aside-section"><SectionTitle icon={Tag}><Link href={`/${full}/releases`} className="fg-link">Rilis</Link></SectionTitle>
+            <div className="flex items-center gap-2 wrap"><Tag size={15} className="icon" style={{ color: "var(--success)" }} /><strong className="wrap-any">{release.name || release.tag_name}</strong><span className="pill ok">Terbaru</span></div>
+            <div className="muted text-sm mt-1">{timeAgo(release.published_at)}</div></div>
         )}
-        {langs && Object.keys(langs).length > 0 && <div className="mt-4"><SectionTitle icon={Code}>Bahasa</SectionTitle><LangBar langs={langs} /></div>}
+        {langs && Object.keys(langs).length > 0 && <div className="aside-section"><SectionTitle icon={Code}>Bahasa</SectionTitle><LangBar langs={langs} /></div>}
         {contributors?.length > 0 && (
-          <div className="mt-4"><SectionTitle icon={Users}>Kontributor</SectionTitle>
+          <div className="aside-section"><SectionTitle icon={Users}>Kontributor <span className="counter">{contributors.length}</span></SectionTitle>
             <div className="avatar-stack">{contributors.map((c) => <Link key={c.id} href={`/${c.login}`} title={c.login}><Avatar src={c.avatar_url} size={32} alt={c.login} /></Link>)}</div></div>
         )}
       </aside>
